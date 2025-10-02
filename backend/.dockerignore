@@ -1,0 +1,35 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-arg.txt
+.tox/
+.coverage
+.coverage.*
+.hypothesis/
+.pytest_cache/
+
+# Editor/IDE specific ignores
+.vscode/
+.idea/
+.DS_Store
+
+# Git specific ignores
+.git/
+.gitignore
+
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# Configuration files that should not be included in the image
+# (e.g., local development configurations)
+.env
+.env.*
