@@ -12,5 +12,9 @@ app.add_middleware(
     allow_headers=["*"],  
 )
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+    
 app.include_router(average.router)
 app.include_router(emwa.router)
