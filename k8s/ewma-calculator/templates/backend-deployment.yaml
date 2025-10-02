@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: backend
+    environment: {{ .Values.environment }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+        environment: {{ .Values.environment }}
+    spec:
+      containers:
+      - name: backend
+        image: {{ .Values.backend.image }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.backend.port }}
+          name: http
+        env:
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: ewma-config
+              key: APP_ENV
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: ewma-config
+              key: LOG_LEVEL
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.backend.port }}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.backend.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: {{ .Values.backend.resources.requests.cpu }}
+            memory: {{ .Values.backend.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.backend.resources.limits.cpu }}
+            memory: {{ .Values.backend.resources.limits.memory }}

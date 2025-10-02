@@ -1,0 +1,31 @@
+namespace: default
+
+backend:
+  image: abhayshaw0125/takehome-backend:latest
+  replicas: 1
+  port: 8000
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+frontend:
+  image: abhayshaw0125/takehome-frontend:latest
+  replicas: 1
+  port: 80
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+
+ingress:
+  host: app.local
+  className: nginx
+
+environment: development

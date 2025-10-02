@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: frontend
+    environment: {{ .Values.environment }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+        environment: {{ .Values.environment }}
+    spec:
+      containers:
+      - name: frontend
+        image: {{ .Values.frontend.image }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.frontend.port }}
+          name: http
+        env:
+        - name: VITE_API_URL
+          value: "/api"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.frontend.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.frontend.port }}
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: {{ .Values.frontend.resources.requests.cpu }}
+            memory: {{ .Values.frontend.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.frontend.resources.limits.cpu }}
+            memory: {{ .Values.frontend.resources.limits.memory }}
