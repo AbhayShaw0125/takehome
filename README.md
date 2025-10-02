@@ -113,8 +113,102 @@ The GitHub Actions workflow automatically:
 1. Push to main branch
 2. Manual worklow dispatch
 
+## Deployment 
+#### One-command Deployment
+```bash
+bash scripts/deploy.sh
+```
+This script will:
+1. Install Kind and Helm (if not present)
+2. Create a Kind cluster
+3. Deploy staging environment
+4. Deploy production environment
+5. Set up port forwarding (for local testing)
+### Access the application at :
+1. Staging
+   - Frontend: http://localhost:4000
+   - Backend:  http://localhost:9000
+2. Production :
+   - Frontend: http://localhost:3000
+   - Backend: http://localhost:8000
+## Manual Deployment
+#### Create Cluster
+```bash
+kind create cluster --config k8s/ewma-calculator/kind-config.yaml --name ewma-cluster
+```
+#### Deploying Staging
+```bash
+cd k8s/ewma-calculator
+helm upgrade --install ewma-staging . \
+  --values values-staging.yaml \
+  --wait
+```
+To see all running resources inside the staging namespace, run the command below
+```bash
+kubectl get all -n staging
+```
+#### Deploy Production
+```bash
+helm upgrade --install ewma-production . \
+  --values values-production.yaml \
+  --wait
+```
+To see all running resources inside the production namespace, run the command below
+```bash
+kubectl get all -n production
+```
+#### To test locally
+Port forward to access locally
+1. Frontend
+```bash
+kubectl port-forward -n staging svc/frontend-service 5173(any_port):80
+```
+2. Backend
+```bash
+kubectl port-forward -n staging svc/backend-service 8000(any_port):80
+```
+The same can be followed for production, just replace **staging** with **production**
 
+#### For Health check
+###### Test health endpoint
+```bash
+curl http://localhost:8000/health
+```
+Should return: {"status":"healthy"}
 
+### Clean Up
+Remove the Kind cluster
+```bash
+kind delete cluster --name ewma-cluster
+```
+
+### Extras
+🔎 Role of Metrics Server in HPA
+    - Metrics Server provides live CPU and memory usage data from pods via the metrics.k8s.io API, which the Horizontal Pod Autoscaler (HPA) uses to scale workloads up or down.
+
+> ⚠️ **Important:** Without Metrics Server, HPA cannot fetch CPU/memory usage.
+
+#### Command to Install Metric Server
+Will use Helm to install metric server
+1. Add Metrics Server repo
+   ```bash
+   helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+   ```
+   This tells Helm where to find the metrics-server chart.
+2. Update Helm repos
+   ```bash
+   helm repo update
+   ```
+   Ensures you have the latest charts from all configured repositories.
+3. Skipping TLS verification
+   ```bash
+   helm up
+   grade --install metrics-server metrics-server/metrics-server \ -n kube-system \ --set args={--kubelet-insecure-tls}
+   ```
+By default metric server uses TLS to connect to Kubelets.
+But since we are using a local environment Kind, kubelets don't have valid certificates, so we need the above command to bypass TLS verification
+   
+   
 
 
 
