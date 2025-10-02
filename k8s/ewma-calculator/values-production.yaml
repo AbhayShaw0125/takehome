@@ -29,3 +29,16 @@ ingress:
   className: nginx
 
 environment: production
+
+hpa:
+  enabled: true   
+  backend:
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPU: 70
+    targetMemory: 80
+  frontend:
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPU: 75
+    targetMemory: 85
