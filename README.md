@@ -207,7 +207,14 @@ Will use Helm to install metric server
    ```
 By default metric server uses TLS to connect to Kubelets.
 But since we are using a local environment Kind, kubelets don't have valid certificates, so we need the above command to bypass TLS verification
+
+
+## Screenshots
+
+   <img width="1458" height="852" alt="frontend" src="https://github.com/user-attachments/assets/df764af6-6f05-4bc8-9bae-260b4e8d8eb0" />
    
+<img width="1898" height="870" alt="backend" src="https://github.com/user-attachments/assets/4415a381-4697-44d7-b8b3-adf7e767236f" />
+
    
 
 
